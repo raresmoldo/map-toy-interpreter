@@ -1,4 +1,7 @@
 package interpreter.model.value;
 
-public class IValue {
+import interpreter.model.type.IType;
+
+public interface IValue {
+    IType getType();
 }

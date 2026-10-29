@@ -1,4 +1,7 @@
 package interpreter.model.type;
 
-public class IType {
+import interpreter.model.value.IValue;
+
+public interface IType {
+    IValue defaultValue();
 }
