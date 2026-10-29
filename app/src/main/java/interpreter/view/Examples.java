@@ -16,7 +16,6 @@ import interpreter.model.value.BoolValue;
 import interpreter.model.value.IntValue;
 import java.util.List;
 
-/** The hard-coded example programs of section 2.2, written as trees of objects. */
 public final class Examples {
     private Examples() { }
 
