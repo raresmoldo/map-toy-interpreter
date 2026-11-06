@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import interpreter.model.value.BoolValue;
 import interpreter.model.value.IntValue;
+import interpreter.model.value.StringValue;
 import org.junit.jupiter.api.Test;
 
 class TypeTest {
@@ -31,5 +32,20 @@ class TypeTest {
     void toStringUsesLanguageKeywords() {
         assertEquals("int", new IntType().toString());
         assertEquals("bool", new BoolType().toString());
+    }
+    @Test
+    void defaultValueOfStringIsTheEmptyString() {
+        assertEquals(new StringValue(""), new StringType().defaultValue());
+    }
+
+    @Test
+    void stringTypeIsDifferentFromIntAndBool() {
+        assertNotEquals(new StringType(), new IntType());
+        assertNotEquals(new StringType(), new BoolType());
+    }
+
+    @Test
+    void stringTypeToStringIsTheKeyword() {
+        assertEquals("string", new StringType().toString());
     }
 }

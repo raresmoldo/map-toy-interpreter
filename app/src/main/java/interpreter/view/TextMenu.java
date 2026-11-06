@@ -13,7 +13,6 @@ import java.io.PrintStream;
 import java.util.List;
 import java.util.Scanner;
 
-/** Text menu: select one of the example programs, then run it completely. */
 public class TextMenu {
     private final Scanner in;
     private final PrintStream out;
