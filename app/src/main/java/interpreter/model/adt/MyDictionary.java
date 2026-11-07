@@ -1,6 +1,7 @@
 package interpreter.model.adt;
 
 import interpreter.exceptions.ADTException;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.StringJoiner;
@@ -21,6 +22,16 @@ public class MyDictionary<K, V> implements IDictionary<K, V> {
     @Override public void update(K key, V value) throws ADTException {
         if (!map.containsKey(key)) throw new ADTException("key " + key + " is not in the dictionary");
         map.put(key, value);
+    }
+
+    @Override public void remove(K key) throws ADTException {
+        if (!map.containsKey(key)) throw new ADTException("key " + key + " is not in the dictionary");
+        map.remove(key);
+    }
+
+    /** A read-only copy that keeps the insertion order (Map.copyOf would shuffle it). */
+    @Override public Map<K, V> toMap() {
+        return Collections.unmodifiableMap(new LinkedHashMap<>(map));
     }
 
     /** e.g. {v -> 2, a -> false}. */

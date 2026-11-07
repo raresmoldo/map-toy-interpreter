@@ -2,6 +2,7 @@ package interpreter.model.adt;
 
 import interpreter.exceptions.ADTException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.StringJoiner;
 
@@ -18,7 +19,10 @@ public class MyList<T> implements IList<T> {
 
     @Override public int size() { return list.size(); }
 
-    /** e.g. {1, 2}: 1 was added first. */
+    @Override public List<T> toList() {
+        return Collections.unmodifiableList(new ArrayList<>(list));
+    }
+
     @Override public String toString() {
         StringJoiner sj = new StringJoiner(", ", "{", "}");
         for (T t : list) sj.add(String.valueOf(t));

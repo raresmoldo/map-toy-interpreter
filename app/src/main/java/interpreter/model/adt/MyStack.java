@@ -2,7 +2,10 @@ package interpreter.model.adt;
 
 import interpreter.exceptions.ADTException;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Deque;
+import java.util.List;
 import java.util.StringJoiner;
 
 public class MyStack<T> implements IStack<T> {
@@ -17,7 +20,10 @@ public class MyStack<T> implements IStack<T> {
 
     @Override public boolean isEmpty() { return stack.isEmpty(); }
 
-    /** Top of the stack first, e.g. {s1 | s2 | s3}. */
+    @Override public List<T> toList() {
+        return Collections.unmodifiableList(new ArrayList<>(stack));
+    }
+
     @Override public String toString() {
         StringJoiner sj = new StringJoiner(" | ", "{", "}");
         for (T t : stack) sj.add(String.valueOf(t));
