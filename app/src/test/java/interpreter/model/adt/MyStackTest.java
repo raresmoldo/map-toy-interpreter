@@ -6,6 +6,8 @@ import interpreter.exceptions.ADTException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 class MyStackTest {
     private IStack<Integer> stack;
 
@@ -57,5 +59,21 @@ class MyStackTest {
     @Test
     void toStringOfEmptyStack() {
         assertEquals("{}", stack.toString());
+    }
+    @Test
+    void toListHasTheTopFirst() {
+        stack.push(3);
+        stack.push(2);
+        stack.push(1);
+        assertEquals(List.of(1, 2, 3), stack.toList());
+    }
+
+    @Test
+    void toListIsAReadOnlyCopy() {
+        stack.push(1);
+        List<Integer> list = stack.toList();
+        assertThrows(UnsupportedOperationException.class, () -> list.add(2));
+        stack.push(2);
+        assertEquals(1, list.size());
     }
 }

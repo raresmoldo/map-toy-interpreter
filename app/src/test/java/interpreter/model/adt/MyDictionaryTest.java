@@ -6,6 +6,9 @@ import interpreter.exceptions.ADTException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+import java.util.Map;
+
 class MyDictionaryTest {
     private IDictionary<String, Integer> dict;
 
@@ -62,5 +65,34 @@ class MyDictionaryTest {
         dict.put("v", 2);
         dict.put("a", 7);
         assertEquals("{v -> 2, a -> 7}", dict.toString());
+    }
+    @Test
+    void removeDeletesTheKey() throws ADTException {
+        dict.put("a", 1);
+        dict.remove("a");
+        assertFalse(dict.isDefined("a"));
+    }
+
+    @Test
+    void removeOfMissingKeyThrows() {
+        assertThrows(ADTException.class, () -> dict.remove("missing"));
+    }
+
+    @Test
+    void toMapHasTheContentInInsertionOrder() {
+        dict.put("v", 2);
+        dict.put("a", 7);
+        Map<String, Integer> map = dict.toMap();
+        assertEquals(Map.of("v", 2, "a", 7), map);
+        assertEquals(List.of("v", "a"), List.copyOf(map.keySet()));
+    }
+
+    @Test
+    void toMapIsAReadOnlyCopy() {
+        dict.put("a", 1);
+        Map<String, Integer> map = dict.toMap();
+        assertThrows(UnsupportedOperationException.class, () -> map.put("b", 2));
+        dict.put("c", 3);
+        assertFalse(map.containsKey("c"));
     }
 }
