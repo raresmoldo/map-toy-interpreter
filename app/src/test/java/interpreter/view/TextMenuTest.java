@@ -6,45 +6,77 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class TextMenuTest {
-    private static String runMenu(String input) {
+    private List<String> executed;
+    private ByteArrayOutputStream buffer;
+
+    /** A command that only records that it was executed. */
+    private Command recording(String key, String description) {
+        return new Command(key, description) {
+            @Override public void execute() { executed.add(key); }
+        };
+    }
+
+    @BeforeEach
+    void setUp() {
+        executed = new ArrayList<>();
+        buffer = new ByteArrayOutputStream();
+    }
+
+    private String show(String input, Command... commands) {
         var in = new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8));
-        var buffer = new ByteArrayOutputStream();
-        new TextMenu(in, new PrintStream(buffer, true, StandardCharsets.UTF_8)).run();
+        TextMenu menu = new TextMenu(in, new PrintStream(buffer, true, StandardCharsets.UTF_8));
+        for (Command c : commands) menu.addCommand(c);
+        menu.show();
         return buffer.toString(StandardCharsets.UTF_8);
     }
 
     @Test
-    void selectedProgramRunsAndPrintsItsResult() {
-        String output = runMenu("1\n2\n2\n0\n");   // select Ex2, run it, exit
-        assertTrue(output.contains("Out: {18}"));
+    void theMenuListsTheCommandsInTheOrderTheyWereAdded() {
+        String output = show("", recording("0", "exit"), recording("1", "first"), recording("2", "second"));
+        int a = output.indexOf("0 : exit"), b = output.indexOf("1 : first"), c = output.indexOf("2 : second");
+        assertTrue(0 <= a && a < b && b < c);
     }
 
     @Test
-    void runningWithoutSelectionOnlyShowsAMessage() {
-        String output = runMenu("2\n0\n");
-        assertTrue(output.contains("No program selected"));
-        assertFalse(output.contains("ExeStack"));
+    void theChosenCommandIsExecuted() {
+        show("1\n", recording("1", "first"), recording("2", "second"));
+        assertEquals(List.of("1"), executed);
     }
 
     @Test
-    void aProgramCanBeRunTwice() {
-        String output = runMenu("1\n1\n2\n2\n0\n");
-        assertEquals(2, output.split("Out: \\{2\\}", -1).length - 1);
+    void severalCommandsAreExecutedInTheOrderChosen() {
+        show("2\n1\n2\n", recording("1", "first"), recording("2", "second"));
+        assertEquals(List.of("2", "1", "2"), executed);
     }
 
     @Test
-    void invalidInputDoesNotCrashTheMenu() {
-        String output = runMenu("hello\n1\nabc\n1\n99\n0\n");
-        assertTrue(output.contains("Invalid option: hello"));
-        assertTrue(output.contains("Please type a number"));
-        assertTrue(output.contains("There is no program number 99"));
+    void anInvalidOptionDoesNotCrashAndExecutesNothing() {
+        String output = show("hello\n99\n1\n", recording("1", "first"));
+        assertTrue(output.contains("Invalid option"));
+        assertEquals(List.of("1"), executed);
+    }
+
+    @Test
+    void spacesAroundTheOptionAreIgnored() {
+        show("  1  \n", recording("1", "first"));
+        assertEquals(List.of("1"), executed);
     }
 
     @Test
     void endOfInputEndsTheMenu() {
-        assertDoesNotThrow(() -> runMenu(""));
+        assertDoesNotThrow(() -> show(""));
+    }
+
+    @Test
+    void commandsExposeTheirKeyAndDescription() {
+        Command c = recording("7", "seventh");
+        assertEquals("7", c.getKey());
+        assertEquals("seventh", c.getDescription());
     }
 }
