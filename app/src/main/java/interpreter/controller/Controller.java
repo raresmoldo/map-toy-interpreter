@@ -22,6 +22,7 @@ public class Controller {
         this.output = output;
     }
 
+    /** Rule S7: executes the statement on top of the ExeStack (one of S1-S6, S8-S10). */
     public PrgState oneStep(PrgState state) throws MyException {
         var stack = state.getExeStack();
         if (stack.isEmpty()) throw new StatementException("execution stack is empty");
@@ -29,11 +30,14 @@ public class Controller {
         return crtStmt.execute(state);
     }
 
+    /** Logs and displays the initial state and the state after every step. */
     public void allStep() throws MyException {
         PrgState prg = repo.getCrtPrg();
+        repo.logPrgStateExec();
         display(prg);
         while (!prg.getExeStack().isEmpty()) {
             oneStep(prg);
+            repo.logPrgStateExec();
             display(prg);
         }
     }
