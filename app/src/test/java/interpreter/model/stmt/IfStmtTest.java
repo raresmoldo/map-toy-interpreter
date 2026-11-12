@@ -62,6 +62,5 @@ class IfStmtTest {
     @Test
     void toStringShowsBothBranches() {
         var s = new IfStmt(new ValueExp(new BoolValue(true)), new NopStmt(), new NopStmt());
-        assertEquals("if true then nop else nop", s.toString());
-    }
+        assertEquals("(if (true) then (nop) else (nop))", s.toString());    }
 }
